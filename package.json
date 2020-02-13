@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "array-merge-by-key": "^1.0.1",
+    "puppeteer": "^2.1.1"
+  }
+}
