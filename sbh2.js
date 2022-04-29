@@ -119,9 +119,56 @@ const puppeteer = require('puppeteer');
         if (error) throw error;
         // Neat!
       });
-      console.log(query.sql); // INSERT INTO nks SET ....
+      console.log(query.sql); // INSERT INTO entribl SET ....
 
       entribl_loop = [...entribl_loop, ...entribl_response]
+      
+    }
+
+
+    for (let index = 0; index < entribl_loop.length; index++) {
+      const element = entribl_loop[index];
+      console.log("{\"triwulan\":\"1\",\"bulan\":1,\"id_bs\":\""+element["id_bs"]+"\",\"id_dsrt\":\""+element["id_dsrt"]+"\"}");
+      const show_response = await page.evaluate(async (cookies, element) => {
+        let response = await fetch("https://webapps.bps.go.id/olah/sbh2022/resource/entriBL/show", {
+            "headers": {
+              "accept": "application/json, text/plain, */*",
+              "accept-language": "en-US,en;q=0.9",
+              "content-type": "application/json;charset=UTF-8",
+              "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"100\", \"Google Chrome\";v=\"100\"",
+              "sec-ch-ua-mobile": "?0",
+              "sec-ch-ua-platform": "\"Windows\"",
+              "sec-fetch-dest": "empty",
+              "sec-fetch-mode": "cors",
+              "sec-fetch-site": "same-origin",
+              "x-requested-with": "XMLHttpRequest",
+              "x-xsrf-token": cookies[2].value,
+            },
+            "referrer": "https://webapps.bps.go.id/olah/sbh2022/entriBL",
+            "referrerPolicy": "strict-origin-when-cross-origin",
+            "body": "{\"triwulan\":\"1\",\"bulan\":1,\"id_bs\":\""+element["id_bs"]+"\",\"id_dsrt\":\""+element["id_dsrt"]+"\"}",
+            "method": "POST",
+            "mode": "cors",
+            "credentials": "include"
+        });
+        let nks = await response.json();
+        // let nks = response;
+        return nks;
+      }, cookies, element);
+
+      console.log("show_response", show_response);
+
+      let insert_columns = Object.keys(show_response["bl_b5"][0]);
+      // returns array ['test', 'value']
+
+      let insert_data = show_response["bl_b5"].reduce((a, i) => [...a, Object.values(i)], []);
+      // returns array [['test1', 12], ['test2', 49]]
+
+      var query = connection.query('INSERT INTO bl_b5 (??) VALUES ?', [insert_columns, insert_data], function (error, results, fields) {
+        if (error) throw error;
+        // Neat!
+      });
+      console.log(query.sql); // INSERT INTO entribl SET ....
       
     }
 
