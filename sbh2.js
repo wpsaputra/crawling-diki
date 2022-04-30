@@ -2,10 +2,6 @@
 
 const puppeteer = require('puppeteer');
 
-
-
-
-
 (async function main() {
   try {
     var mysql      = require('mysql');
@@ -15,6 +11,11 @@ const puppeteer = require('puppeteer');
       password : '',
       database : 'sbh'
     });
+
+    var triwulan = 1;
+    var bulan = 3;
+
+
     
     connection.connect();
     const browser = await puppeteer.launch({ headless: false, args: ['--incognito'] });
@@ -36,7 +37,7 @@ const puppeteer = require('puppeteer');
     const cookies = await page.cookies();
     await page.goto("https://webapps.bps.go.id/olah/sbh2022/entriBL#/", { waitUntil: 'networkidle0', timeout: 0 });
 
-    const nks_response = await page.evaluate(async (cookies) => {
+    const nks_response = await page.evaluate(async (cookies, triwulan, bulan) => {
         let response = await fetch("https://webapps.bps.go.id/olah/sbh2022/resource/wilayah/nks", {
             "headers": {
                 "accept": "application/json, text/plain, */*",
@@ -53,7 +54,7 @@ const puppeteer = require('puppeteer');
             },
             "referrer": "https://webapps.bps.go.id/olah/sbh2022/entriBL",
             "referrerPolicy": "strict-origin-when-cross-origin",
-            "body": "{\"kd_prov\":\"74\",\"kd_kab\":\"71\",\"tw\":\"1\"}",
+            "body": "{\"kd_prov\":\"74\",\"kd_kab\":\"71\",\"tw\":\""+triwulan+"\"}",
             "method": "POST",
             "mode": "cors",
             "credentials": "include"
@@ -61,7 +62,7 @@ const puppeteer = require('puppeteer');
         let nks = await response.json();
         // let nks = response;
         return nks;
-    }, cookies);
+    }, cookies, triwulan, bulan);
 
     console.log("nks_response", nks_response);
 
@@ -71,7 +72,7 @@ const puppeteer = require('puppeteer');
     let insert_data = nks_response.reduce((a, i) => [...a, Object.values(i)], []);
     // returns array [['test1', 12], ['test2', 49]]
 
-    var query = connection.query('INSERT INTO nks (??) VALUES ?', [insert_columns, insert_data], function (error, results, fields) {
+    var query = connection.query('REPLACE INTO nks (??) VALUES ?', [insert_columns, insert_data], function (error, results, fields) {
       if (error) throw error;
       // Neat!
     });
@@ -81,7 +82,7 @@ const puppeteer = require('puppeteer');
 
     for (let index = 0; index < nks_response.length; index++) {
       const nks = nks_response[index]["nks"];
-      const entribl_response = await page.evaluate(async (cookies, nks) => {
+      const entribl_response = await page.evaluate(async (cookies, nks, triwulan, bulan) => {
         let response = await fetch("https://webapps.bps.go.id/olah/sbh2022/resource/entriBL", {
             "headers": {
               "accept": "application/json, text/plain, */*",
@@ -98,7 +99,7 @@ const puppeteer = require('puppeteer');
             },
             "referrer": "https://webapps.bps.go.id/olah/sbh2022/entriBL",
             "referrerPolicy": "strict-origin-when-cross-origin",
-            "body": "{\"kd_prov\":\"74\",\"kd_kab\":\"71\",\"nks\":"+nks+",\"bulan\":1}",
+            "body": "{\"kd_prov\":\"74\",\"kd_kab\":\"71\",\"nks\":"+nks+",\"bulan\":"+bulan+"}",
             "method": "POST",
             "mode": "cors",
             "credentials": "include"
@@ -106,7 +107,7 @@ const puppeteer = require('puppeteer');
         let entribl = await response.json();
         // let nks = response;
         return entribl;
-      }, cookies, nks);
+      }, cookies, nks, triwulan, bulan);
 
       console.log("entribl_response", entribl_response);
       let insert_columns = Object.keys(entribl_response[0]);
@@ -115,7 +116,7 @@ const puppeteer = require('puppeteer');
       let insert_data = entribl_response.reduce((a, i) => [...a, Object.values(i)], []);
       // returns array [['test1', 12], ['test2', 49]]
 
-      var query = connection.query('INSERT INTO entribl (??) VALUES ?', [insert_columns, insert_data], function (error, results, fields) {
+      var query = connection.query('REPLACE INTO entribl (??) VALUES ?', [insert_columns, insert_data], function (error, results, fields) {
         if (error) throw error;
         // Neat!
       });
@@ -129,7 +130,7 @@ const puppeteer = require('puppeteer');
     for (let index = 0; index < entribl_loop.length; index++) {
       const element = entribl_loop[index];
       console.log("{\"triwulan\":\"1\",\"bulan\":1,\"id_bs\":\""+element["id_bs"]+"\",\"id_dsrt\":\""+element["id_dsrt"]+"\"}");
-      const show_response = await page.evaluate(async (cookies, element) => {
+      const show_response = await page.evaluate(async (cookies, element, triwulan, bulan) => {
         let response = await fetch("https://webapps.bps.go.id/olah/sbh2022/resource/entriBL/show", {
             "headers": {
               "accept": "application/json, text/plain, */*",
@@ -146,7 +147,7 @@ const puppeteer = require('puppeteer');
             },
             "referrer": "https://webapps.bps.go.id/olah/sbh2022/entriBL",
             "referrerPolicy": "strict-origin-when-cross-origin",
-            "body": "{\"triwulan\":\"1\",\"bulan\":1,\"id_bs\":\""+element["id_bs"]+"\",\"id_dsrt\":\""+element["id_dsrt"]+"\"}",
+            "body": "{\"triwulan\":\""+triwulan+"\",\"bulan\":"+bulan+",\"id_bs\":\""+element["id_bs"]+"\",\"id_dsrt\":\""+element["id_dsrt"]+"\"}",
             "method": "POST",
             "mode": "cors",
             "credentials": "include"
@@ -154,17 +155,19 @@ const puppeteer = require('puppeteer');
         let nks = await response.json();
         // let nks = response;
         return nks;
-      }, cookies, element);
+      }, cookies, element, triwulan, bulan);
 
       console.log("show_response", show_response);
 
-      let insert_columns = Object.keys(show_response["bl_b5"][0]);
-      let insert_data = show_response["bl_b5"].reduce((a, i) => [...a, Object.values(i)], []);
-      var query = connection.query('INSERT INTO bl_b5 (??) VALUES ?', [insert_columns, insert_data], function (error, results, fields) {
-        if (error) throw error;
-        // Neat!
-      });
-      console.log(query.sql); // INSERT INTO bl_b5 SET ....
+      if(show_response["bl_b5"].length>0){
+        let insert_columns = Object.keys(show_response["bl_b5"][0]);
+        let insert_data = show_response["bl_b5"].reduce((a, i) => [...a, Object.values(i)], []);
+        var query = connection.query('INSERT INTO bl_b5 (??) VALUES ?', [insert_columns, insert_data], function (error, results, fields) {
+          if (error) throw error;
+          // Neat!
+        });
+        console.log(query.sql); // INSERT INTO bl_b5 SET ....
+      }
 
       insert_columns = Object.keys(show_response["bl_b41"][0]);
       insert_data = show_response["bl_b41"].reduce((a, i) => [...a, Object.values(i)], []);
