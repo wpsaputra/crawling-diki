@@ -124,84 +124,106 @@ const puppeteer = require('puppeteer');
     }
 
 
-    // for (let index = 0; index < entris_loop.length; index++) {
-    //   const element = entris_loop[index];
-    //   console.log("{\"triwulan\":\"1\",\"bulan\":1,\"id_bs\":\""+element["id_bs"]+"\",\"id_dsrt\":\""+element["id_dsrt"]+"\"}");
-    //   const show_response = await page.evaluate(async (cookies, element, triwulan, bulan) => {
-    //     let response = await fetch("https://webapps.bps.go.id/olah/sbh2022/resource/entriBL/show", {
-    //         "headers": {
-    //           "accept": "application/json, text/plain, */*",
-    //           "accept-language": "en-US,en;q=0.9",
-    //           "content-type": "application/json;charset=UTF-8",
-    //           "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"100\", \"Google Chrome\";v=\"100\"",
-    //           "sec-ch-ua-mobile": "?0",
-    //           "sec-ch-ua-platform": "\"Windows\"",
-    //           "sec-fetch-dest": "empty",
-    //           "sec-fetch-mode": "cors",
-    //           "sec-fetch-site": "same-origin",
-    //           "x-requested-with": "XMLHttpRequest",
-    //           "x-xsrf-token": cookies[2].value,
-    //         },
-    //         "referrer": "https://webapps.bps.go.id/olah/sbh2022/entriBL",
-    //         "referrerPolicy": "strict-origin-when-cross-origin",
-    //         "body": "{\"triwulan\":\""+triwulan+"\",\"bulan\":"+bulan+",\"id_bs\":\""+element["id_bs"]+"\",\"id_dsrt\":\""+element["id_dsrt"]+"\"}",
-    //         "method": "POST",
-    //         "mode": "cors",
-    //         "credentials": "include"
-    //     });
-    //     let nks = await response.json();
-    //     // let nks = response;
-    //     return nks;
-    //   }, cookies, element, triwulan, bulan);
+    for (let index = 0; index < entris_loop.length; index++) {
+      const element = entris_loop[index];
+      const show_response = await page.evaluate(async (cookies, element, triwulan) => {
+        let response = await fetch("https://webapps.bps.go.id/olah/sbh2022/resource/entriS/show", {
+          "headers": {
+            "accept": "application/json, text/plain, */*",
+            "accept-language": "en-US,en;q=0.9",
+            "content-type": "application/json;charset=UTF-8",
+            "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"100\", \"Google Chrome\";v=\"100\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "x-requested-with": "XMLHttpRequest",
+            "x-xsrf-token": cookies[2].value,
+          },
+          "referrer": "https://webapps.bps.go.id/olah/sbh2022/entriS",
+          "referrerPolicy": "strict-origin-when-cross-origin",
+          "body": "{\"triwulan\":\""+triwulan+"\",\"id_bs\":\""+element["id_bs"]+"\",\"id_dsrt\":\""+element["id_dsrt"]+"\"}",
+          "method": "POST",
+          "mode": "cors",
+          "credentials": "include"
+        });
+        let nks = await response.json();
+        // let nks = response;
+        return nks;
+      }, cookies, element, triwulan);
 
-    //   console.log("show_response", show_response);
+      console.log("show_response", show_response);
 
-    //   if(show_response["bl_b5"].length>0){
-    //     let insert_columns = Object.keys(show_response["bl_b5"][0]);
-    //     let insert_data = show_response["bl_b5"].reduce((a, i) => [...a, Object.values(i)], []);
-    //     var query = connection.query('INSERT INTO bl_b5 (??) VALUES ?', [insert_columns, insert_data], function (error, results, fields) {
-    //       if (error) throw error;
-    //       // Neat!
-    //     });
-    //     console.log(query.sql); // INSERT INTO bl_b5 SET ....
-    //   }
+      if(show_response["s_b6"].length>0){
+        let insert_columns = Object.keys(show_response["s_b6"][0]);
+        let insert_data = show_response["s_b6"].reduce((a, i) => [...a, Object.values(i)], []);
+        var query = connection.query('INSERT INTO s_b6 (??) VALUES ?', [insert_columns, insert_data], function (error, results, fields) {
+          if (error) throw error;
+          // Neat!
+        });
+        console.log(query.sql); // INSERT INTO s_b6 SET ....
+      }
 
-    //   insert_columns = Object.keys(show_response["bl_b41"][0]);
-    //   insert_data = show_response["bl_b41"].reduce((a, i) => [...a, Object.values(i)], []);
-    //   query = connection.query('INSERT INTO bl_b41 (??) VALUES ?', [insert_columns, insert_data], function (error, results, fields) {
-    //     if (error) throw error;
-    //     // Neat!
-    //   });
-    //   console.log(query.sql); // INSERT INTO bl_b41 SET ....
+      if(show_response["s_b7"].length>0){
+        insert_columns = Object.keys(show_response["s_b7"][0]);
+        insert_data = show_response["s_b7"].reduce((a, i) => [...a, Object.values(i)], []);
+        query = connection.query('INSERT INTO s_b7 (??) VALUES ?', [insert_columns, insert_data], function (error, results, fields) {
+          if (error) throw error;
+          // Neat!
+        });
+        console.log(query.sql); // INSERT INTO s_b7 SET ....
+      }
 
-    //   insert_columns = Object.keys(show_response["bl_dok"]);
-    //   // insert_data = show_response["bl_dok"].reduce((a, i) => [...a, Object.values(i)], []);
-    //   insert_data = Object.values(show_response["bl_dok"]);
-    //   query = connection.query('INSERT INTO bl_dok (??) VALUES (?)', [insert_columns, insert_data], function (error, results, fields) {
-    //     if (error) throw error;
-    //     // Neat!
-    //   });
-    //   console.log(query.sql); // INSERT INTO bl_dok SET ....
+      if(show_response["s_b41"].length>0){
+        insert_columns = Object.keys(show_response["s_b41"][0]);
+        insert_data = show_response["s_b41"].reduce((a, i) => [...a, Object.values(i)], []);
+        query = connection.query('INSERT INTO s_b41 (??) VALUES ?', [insert_columns, insert_data], function (error, results, fields) {
+          if (error) throw error;
+          // Neat!
+        });
+        console.log(query.sql); // INSERT INTO s_b41 SET ....
+      }
 
-    //   insert_columns = Object.keys(show_response["bs"]);
-    //   // insert_data = show_response["bs"].reduce((a, i) => [...a, Object.values(i)], []);
-    //   insert_data = Object.values(show_response["bs"]);
-    //   query = connection.query('INSERT INTO bS (??) VALUES (?)', [insert_columns, insert_data], function (error, results, fields) {
-    //     if (error) throw error;
-    //     // Neat!
-    //   });
-    //   console.log(query.sql); // INSERT INTO bs SET ....
+      if(show_response["s_b81"].length>0){
+        insert_columns = Object.keys(show_response["s_b81"][0]);
+        insert_data = show_response["s_b81"].reduce((a, i) => [...a, Object.values(i)], []);
+        query = connection.query('INSERT INTO s_b81 (??) VALUES ?', [insert_columns, insert_data], function (error, results, fields) {
+          if (error) throw error;
+          // Neat!
+        });
+        console.log(query.sql); // INSERT INTO s_b81 SET ....
+      }
 
-    //   insert_columns = Object.keys(show_response["dsrt"]);
-    //   // insert_data = show_response["dsrt"].reduce((a, i) => [...a, Object.values(i)], []);
-    //   insert_data = Object.values(show_response["dsrt"]);
-    //   query = connection.query('INSERT INTO dsrt (??) VALUES (?)', [insert_columns, insert_data], function (error, results, fields) {
-    //     if (error) throw error;
-    //     // Neat!
-    //   });
-    //   console.log(query.sql); // INSERT INTO dsrt SET ....
+
+      insert_columns = Object.keys(show_response["s_dok"]);
+      // insert_data = show_response["bl_dok"].reduce((a, i) => [...a, Object.values(i)], []);
+      insert_data = Object.values(show_response["s_dok"]);
+      query = connection.query('INSERT INTO s_dok (??) VALUES (?)', [insert_columns, insert_data], function (error, results, fields) {
+        if (error) throw error;
+        // Neat!
+      });
+      console.log(query.sql); // INSERT INTO s_dok SET ....
+
+      insert_columns = Object.keys(show_response["bs"]);
+      // insert_data = show_response["bs"].reduce((a, i) => [...a, Object.values(i)], []);
+      insert_data = Object.values(show_response["bs"]);
+      query = connection.query('INSERT INTO bS (??) VALUES (?)', [insert_columns, insert_data], function (error, results, fields) {
+        if (error) throw error;
+        // Neat!
+      });
+      console.log(query.sql); // INSERT INTO bs SET ....
+
+      insert_columns = Object.keys(show_response["dsrt"]);
+      // insert_data = show_response["dsrt"].reduce((a, i) => [...a, Object.values(i)], []);
+      insert_data = Object.values(show_response["dsrt"]);
+      query = connection.query('INSERT INTO dsrt (??) VALUES (?)', [insert_columns, insert_data], function (error, results, fields) {
+        if (error) throw error;
+        // Neat!
+      });
+      console.log(query.sql); // INSERT INTO dsrt SET ....
       
-    // }
+    }
 
 
 
