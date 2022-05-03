@@ -9,7 +9,7 @@ const puppeteer = require('puppeteer');
       host     : 'localhost',
       user     : 'root',
       password : '',
-      database : 'sbh'
+      database : 'sbh_bl'
     });
 
     var triwulan = 1;
