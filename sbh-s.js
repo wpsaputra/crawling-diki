@@ -13,6 +13,7 @@ const puppeteer = require('puppeteer');
     });
 
     var triwulan = 1;
+    var kabupaten = '72';
     
     connection.connect();
     const browser = await puppeteer.launch({ headless: false, args: ['--incognito'] });
@@ -34,7 +35,7 @@ const puppeteer = require('puppeteer');
     const cookies = await page.cookies();
     await page.goto("https://webapps.bps.go.id/olah/sbh2022/entriS#/", { waitUntil: 'networkidle0', timeout: 0 });
 
-    const nks_response = await page.evaluate(async (cookies, triwulan) => {
+    const nks_response = await page.evaluate(async (cookies, triwulan,kabupaten) => {
         let response = await fetch("https://webapps.bps.go.id/olah/sbh2022/resource/wilayah/nks", {
             "headers": {
                 "accept": "application/json, text/plain, */*",
@@ -51,7 +52,7 @@ const puppeteer = require('puppeteer');
             },
             "referrer": "https://webapps.bps.go.id/olah/sbh2022/entriBL",
             "referrerPolicy": "strict-origin-when-cross-origin",
-            "body": "{\"kd_prov\":\"74\",\"kd_kab\":\"71\",\"tw\":\""+triwulan+"\"}",
+            "body": "{\"kd_prov\":\"74\",\"kd_kab\":\""+kabupaten+"\",\"tw\":\""+triwulan+"\"}",
             "method": "POST",
             "mode": "cors",
             "credentials": "include"
@@ -59,7 +60,7 @@ const puppeteer = require('puppeteer');
         let nks = await response.json();
         // let nks = response;
         return nks;
-    }, cookies, triwulan);
+    }, cookies, triwulan, kabupaten);
 
     console.log("nks_response", nks_response);
 
@@ -79,7 +80,7 @@ const puppeteer = require('puppeteer');
 
     for (let index = 0; index < nks_response.length; index++) {
       const nks = nks_response[index]["nks"];
-      const entris_response = await page.evaluate(async (cookies, nks, triwulan) => {
+      const entris_response = await page.evaluate(async (cookies, nks, triwulan, kabupaten) => {
         let response = await fetch("https://webapps.bps.go.id/olah/sbh2022/resource/entriS", {
           "headers": {
             "accept": "application/json, text/plain, */*",
@@ -96,7 +97,7 @@ const puppeteer = require('puppeteer');
           },
           "referrer": "https://webapps.bps.go.id/olah/sbh2022/entriS",
           "referrerPolicy": "strict-origin-when-cross-origin",
-          "body": "{\"kd_prov\":\"74\",\"kd_kab\":\"71\",\"nks\":\""+nks+"\"}",
+          "body": "{\"kd_prov\":\"74\",\"kd_kab\":\""+kabupaten+"\",\"nks\":\""+nks+"\"}",
           "method": "POST",
           "mode": "cors",
           "credentials": "include"
@@ -104,7 +105,7 @@ const puppeteer = require('puppeteer');
         let entris = await response.json();
         // let nks = response;
         return entris;
-      }, cookies, nks, triwulan);
+      }, cookies, nks, triwulan, kabupaten);
 
       console.log("entris_response", entris_response);
       let insert_columns = Object.keys(entris_response[0]);

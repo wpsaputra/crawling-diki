@@ -13,7 +13,8 @@ const puppeteer = require('puppeteer');
     });
 
     var triwulan = 1;
-    var bulan = 3;
+    var bulan = 1;
+    var kabupaten = '72'
 
 
     
@@ -37,7 +38,7 @@ const puppeteer = require('puppeteer');
     const cookies = await page.cookies();
     await page.goto("https://webapps.bps.go.id/olah/sbh2022/entriBL#/", { waitUntil: 'networkidle0', timeout: 0 });
 
-    const nks_response = await page.evaluate(async (cookies, triwulan, bulan) => {
+    const nks_response = await page.evaluate(async (cookies, triwulan, bulan, kabupaten) => {
         let response = await fetch("https://webapps.bps.go.id/olah/sbh2022/resource/wilayah/nks", {
             "headers": {
                 "accept": "application/json, text/plain, */*",
@@ -54,7 +55,7 @@ const puppeteer = require('puppeteer');
             },
             "referrer": "https://webapps.bps.go.id/olah/sbh2022/entriBL",
             "referrerPolicy": "strict-origin-when-cross-origin",
-            "body": "{\"kd_prov\":\"74\",\"kd_kab\":\"71\",\"tw\":\""+triwulan+"\"}",
+            "body": "{\"kd_prov\":\"74\",\"kd_kab\":\""+kabupaten+"\",\"tw\":\""+triwulan+"\"}",
             "method": "POST",
             "mode": "cors",
             "credentials": "include"
@@ -62,7 +63,7 @@ const puppeteer = require('puppeteer');
         let nks = await response.json();
         // let nks = response;
         return nks;
-    }, cookies, triwulan, bulan);
+    }, cookies, triwulan, bulan, kabupaten);
 
     console.log("nks_response", nks_response);
 
@@ -82,7 +83,7 @@ const puppeteer = require('puppeteer');
 
     for (let index = 0; index < nks_response.length; index++) {
       const nks = nks_response[index]["nks"];
-      const entribl_response = await page.evaluate(async (cookies, nks, triwulan, bulan) => {
+      const entribl_response = await page.evaluate(async (cookies, nks, triwulan, bulan, kabupaten) => {
         let response = await fetch("https://webapps.bps.go.id/olah/sbh2022/resource/entriBL", {
             "headers": {
               "accept": "application/json, text/plain, */*",
@@ -99,7 +100,7 @@ const puppeteer = require('puppeteer');
             },
             "referrer": "https://webapps.bps.go.id/olah/sbh2022/entriBL",
             "referrerPolicy": "strict-origin-when-cross-origin",
-            "body": "{\"kd_prov\":\"74\",\"kd_kab\":\"71\",\"nks\":"+nks+",\"bulan\":"+bulan+"}",
+            "body": "{\"kd_prov\":\"74\",\"kd_kab\":\""+kabupaten+"\",\"nks\":"+nks+",\"bulan\":"+bulan+"}",
             "method": "POST",
             "mode": "cors",
             "credentials": "include"
@@ -107,7 +108,7 @@ const puppeteer = require('puppeteer');
         let entribl = await response.json();
         // let nks = response;
         return entribl;
-      }, cookies, nks, triwulan, bulan);
+      }, cookies, nks, triwulan, bulan, kabupaten);
 
       console.log("entribl_response", entribl_response);
       let insert_columns = Object.keys(entribl_response[0]);
@@ -169,13 +170,15 @@ const puppeteer = require('puppeteer');
         console.log(query.sql); // INSERT INTO bl_b5 SET ....
       }
 
-      insert_columns = Object.keys(show_response["bl_b41"][0]);
-      insert_data = show_response["bl_b41"].reduce((a, i) => [...a, Object.values(i)], []);
-      query = connection.query('INSERT INTO bl_b41 (??) VALUES ?', [insert_columns, insert_data], function (error, results, fields) {
-        if (error) throw error;
-        // Neat!
-      });
-      console.log(query.sql); // INSERT INTO bl_b41 SET ....
+      if(show_response["bl_b41"].length>0){
+        insert_columns = Object.keys(show_response["bl_b41"][0]);
+        insert_data = show_response["bl_b41"].reduce((a, i) => [...a, Object.values(i)], []);
+        query = connection.query('INSERT INTO bl_b41 (??) VALUES ?', [insert_columns, insert_data], function (error, results, fields) {
+          if (error) throw error;
+          // Neat!
+        });
+        console.log(query.sql); // INSERT INTO bl_b41 SET ....
+      }
 
       insert_columns = Object.keys(show_response["bl_dok"]);
       // insert_data = show_response["bl_dok"].reduce((a, i) => [...a, Object.values(i)], []);
