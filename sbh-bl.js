@@ -13,8 +13,8 @@ const puppeteer = require('puppeteer');
     });
 
     var triwulan = 1;
-    var bulan = 1;
-    var kabupaten = '72'
+    var bulan = 3;
+    var kabupaten = '72';
 
 
     
