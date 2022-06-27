@@ -155,7 +155,7 @@ const puppeteer = require('puppeteer');
           "mode": "cors",
           "credentials": "include"
         });
-        let unlocked = await unlock.json();
+        let unlocked = await unlock;
 
         let lock = await fetch("https://webapps.bps.go.id/olah/sbh2022/resource/entriBL/lockDokumen", {
           "headers": {
@@ -180,7 +180,7 @@ const puppeteer = require('puppeteer');
           "mode": "cors",
           "credentials": "include"
         });
-        let locked = await lock.json();
+        let locked = await lock;
 
         let response = await fetch("https://webapps.bps.go.id/olah/sbh2022/resource/entriBL/show", {
             "headers": {
@@ -228,7 +228,7 @@ const puppeteer = require('puppeteer');
           "mode": "cors",
           "credentials": "include"
         });
-        unlocked = await unlock.json();
+        unlocked = await unlock;
 
         // let nks = response;
         return nks;
@@ -282,6 +282,9 @@ const puppeteer = require('puppeteer');
         // Neat!
       });
       console.log(query.sql); // INSERT INTO dsrt SET ....
+      if(entribl_loop.length-1==index){
+        console.log("FINISHED");
+      }
       
     }
 
