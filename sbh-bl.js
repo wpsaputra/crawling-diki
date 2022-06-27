@@ -13,8 +13,8 @@ const puppeteer = require('puppeteer');
     });
 
     var triwulan = 1;
-    var bulan = 3;
-    var kabupaten = '72';
+    var bulan = 1;
+    var kabupaten = '03';
 
 
     
@@ -132,6 +132,56 @@ const puppeteer = require('puppeteer');
       const element = entribl_loop[index];
       console.log("{\"triwulan\":\"1\",\"bulan\":1,\"id_bs\":\""+element["id_bs"]+"\",\"id_dsrt\":\""+element["id_dsrt"]+"\"}");
       const show_response = await page.evaluate(async (cookies, element, triwulan, bulan) => {
+        let unlock = fetch("https://webapps.bps.go.id/olah/sbh2022/resource/entriBL/unlockDokumen", {
+          "headers": {
+            "accept": "application/json, text/plain, */*",
+            "accept-language": "en-US,en;q=0.9",
+            "cache-control": "no-cache",
+            "content-type": "application/json;charset=UTF-8",
+            "pragma": "no-cache",
+            "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"102\", \"Google Chrome\";v=\"102\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "x-requested-with": "XMLHttpRequest",
+            "x-xsrf-token": cookies[2].value,
+          },
+          "referrer": "https://webapps.bps.go.id/olah/sbh2022/entriBL",
+          "referrerPolicy": "strict-origin-when-cross-origin",
+          "body": "{\"bulan\":"+bulan+",\"id_bs\":\""+element["id_bs"]+"\",\"id_dsrt\":\""+element["id_dsrt"]+"\"}",
+          "method": "POST",
+          "mode": "cors",
+          "credentials": "include"
+        });
+        let unlocked = await unlock.json();
+
+        let lock = await fetch("https://webapps.bps.go.id/olah/sbh2022/resource/entriBL/lockDokumen", {
+          "headers": {
+            "accept": "application/json, text/plain, */*",
+            "accept-language": "en-US,en;q=0.9",
+            "cache-control": "no-cache",
+            "content-type": "application/json;charset=UTF-8",
+            "pragma": "no-cache",
+            "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"102\", \"Google Chrome\";v=\"102\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "x-requested-with": "XMLHttpRequest",
+            "x-xsrf-token": cookies[2].value,
+          },
+          "referrer": "https://webapps.bps.go.id/olah/sbh2022/entriBL",
+          "referrerPolicy": "strict-origin-when-cross-origin",
+          "body": "{\"triwulan\":\""+triwulan+"\",\"bulan\":"+bulan+",\"id_bs\":\""+element["id_bs"]+"\",\"id_dsrt\":\""+element["id_dsrt"]+"\"}",
+          "method": "POST",
+          "mode": "cors",
+          "credentials": "include"
+        });
+        let locked = await lock.json();
+
         let response = await fetch("https://webapps.bps.go.id/olah/sbh2022/resource/entriBL/show", {
             "headers": {
               "accept": "application/json, text/plain, */*",
@@ -154,6 +204,32 @@ const puppeteer = require('puppeteer');
             "credentials": "include"
         });
         let nks = await response.json();
+
+        unlock = fetch("https://webapps.bps.go.id/olah/sbh2022/resource/entriBL/unlockDokumen", {
+          "headers": {
+            "accept": "application/json, text/plain, */*",
+            "accept-language": "en-US,en;q=0.9",
+            "cache-control": "no-cache",
+            "content-type": "application/json;charset=UTF-8",
+            "pragma": "no-cache",
+            "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"102\", \"Google Chrome\";v=\"102\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "x-requested-with": "XMLHttpRequest",
+            "x-xsrf-token": cookies[2].value,
+          },
+          "referrer": "https://webapps.bps.go.id/olah/sbh2022/entriBL",
+          "referrerPolicy": "strict-origin-when-cross-origin",
+          "body": "{\"bulan\":"+bulan+",\"id_bs\":\""+element["id_bs"]+"\",\"id_dsrt\":\""+element["id_dsrt"]+"\"}",
+          "method": "POST",
+          "mode": "cors",
+          "credentials": "include"
+        });
+        unlocked = await unlock.json();
+
         // let nks = response;
         return nks;
       }, cookies, element, triwulan, bulan);
