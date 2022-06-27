@@ -13,7 +13,7 @@ const puppeteer = require('puppeteer');
     });
 
     var triwulan = 1;
-    var kabupaten = '03'
+    var kabupaten = '72'
     
     connection.connect();
     const browser = await puppeteer.launch({ headless: false, args: ['--incognito'] });
