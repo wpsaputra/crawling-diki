@@ -233,8 +233,10 @@ const puppeteer = require('puppeteer');
       console.log("show_response", show_response);
 
       if(show_response["lk_detil"].length>0){
-        let insert_columns = Object.keys(show_response["lk_detil"][0]);
-        let insert_data = show_response["lk_detil"].reduce((a, i) => [...a, Object.values(i)], []);
+        let insert_columns = Object.keys(show_response["lk_detil"][0]).concat("id_lk");
+        console.log("insert_columns", insert_columns);
+        let insert_data = show_response["lk_detil"].reduce((a, i) => [...a, Object.values(i).concat(show_response["lk_dok"]["id_lk"])], []);
+        console.log("insert_data", insert_data);
         var query = connection.query('INSERT INTO lk_detil (??) VALUES ?', [insert_columns, insert_data], function (error, results, fields) {
           if (error) throw error;
           // Neat!
