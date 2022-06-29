@@ -13,8 +13,8 @@ const puppeteer = require('puppeteer');
     });
 
     var triwulan = 1;
-    var bulan = 3;
-    var kabupaten = '72';
+    var bulan = 1;
+    var kabupaten = '03';
 
 
     
@@ -237,8 +237,8 @@ const puppeteer = require('puppeteer');
       console.log("show_response", show_response);
 
       if(show_response["bl_b5"].length>0){
-        let insert_columns = Object.keys(show_response["bl_b5"][0]);
-        let insert_data = show_response["bl_b5"].reduce((a, i) => [...a, Object.values(i)], []);
+        let insert_columns = Object.keys(show_response["bl_b5"][0]).concat("id_bl");
+        let insert_data = show_response["bl_b5"].reduce((a, i) => [...a, Object.values(i).concat(show_response["bl_dok"]["id_bl"])], []);
         var query = connection.query('INSERT INTO bl_b5 (??) VALUES ?', [insert_columns, insert_data], function (error, results, fields) {
           if (error) throw error;
           // Neat!

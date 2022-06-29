@@ -13,7 +13,7 @@ const puppeteer = require('puppeteer');
     });
 
     var triwulan = 1;
-    var kabupaten = '03';
+    var kabupaten = '72';
     
     connection.connect();
     const browser = await puppeteer.launch({ headless: false, args: ['--incognito'] });
@@ -233,8 +233,8 @@ const puppeteer = require('puppeteer');
       console.log("show_response", show_response);
 
       if(show_response["s_b6"].length>0){
-        let insert_columns = Object.keys(show_response["s_b6"][0]);
-        let insert_data = show_response["s_b6"].reduce((a, i) => [...a, Object.values(i)], []);
+        let insert_columns = Object.keys(show_response["s_b6"][0]).concat("id_s");
+        let insert_data = show_response["s_b6"].reduce((a, i) => [...a, Object.values(i).concat(show_response["s_dok"]["id_s"])], []);
         var query = connection.query('INSERT INTO s_b6 (??) VALUES ?', [insert_columns, insert_data], function (error, results, fields) {
           if (error) throw error;
           // Neat!
@@ -243,8 +243,8 @@ const puppeteer = require('puppeteer');
       }
 
       if(show_response["s_b7"].length>0){
-        insert_columns = Object.keys(show_response["s_b7"][0]);
-        insert_data = show_response["s_b7"].reduce((a, i) => [...a, Object.values(i)], []);
+        insert_columns = Object.keys(show_response["s_b7"][0]).concat("id_s");
+        insert_data = show_response["s_b7"].reduce((a, i) => [...a, Object.values(i).concat(show_response["s_dok"]["id_s"])], []);
         query = connection.query('INSERT INTO s_b7 (??) VALUES ?', [insert_columns, insert_data], function (error, results, fields) {
           if (error) throw error;
           // Neat!
